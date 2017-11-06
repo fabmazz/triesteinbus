@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name" translatable="false">TriesteinBus</string>
+    <string name="fermata_num">Stop name</string>
+    <string name="route_towards_destination">%1$s towards %2$s</string>
+    <string name="route_towards_unknown">%s (unknown destination)</string>
+    <string name="no_passages">No passages for this line</string>
+</resources>

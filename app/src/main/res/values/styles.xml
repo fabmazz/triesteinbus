@@ -1,0 +1,11 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/trasporti_lighter</item>
+        <item name="colorPrimaryDark">@color/trasporti_dark</item>
+        <item name="colorAccent">@color/trieste_flag</item>
+    </style>
+
+</resources>
