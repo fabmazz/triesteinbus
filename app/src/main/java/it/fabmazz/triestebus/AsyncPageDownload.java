@@ -18,30 +18,42 @@
 
 package it.fabmazz.triestebus;
 
+import android.app.Activity;
+import android.app.Fragment;
+import android.content.Context;
 import android.os.AsyncTask;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import it.fabmazz.triestebus.backend.NetworkTools;
+import it.fabmazz.triestebus.fragments.ResultListFragment;
 import it.fabmazz.triestebus.model.DownloadResult;
 import it.fabmazz.triestebus.model.PageParser;
+import it.fabmazz.triestebus.model.Stop;
+import it.fabmazz.triestebus.ui_components.PalinaAdapter;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
-import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
-import java.lang.annotation.Documented;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.lang.ref.WeakReference;
 
-public class AsyncPageDownload<PageParser> extends AsyncTask<String,DownloadResult,String> {
+public class AsyncPageDownload<P extends PageParser> extends AsyncTask<String,DownloadResult,String> {
+    private static final String DEBUG_TAG = "AsyncPageDownloader";
+    private P parser;
+    private WeakReference<AppCompatActivity> reference;
+
+    public AsyncPageDownload(P parser, WeakReference<AppCompatActivity> c) {
+        this.parser = parser;
+        this.reference = c;
+    }
+
     @Override
     protected String doInBackground(String... strings) {
+
+        String responseString = null;
 
         OkHttpClient theClient = NetworkTools.getClient();
         Request request = new Request.Builder().url(strings[0]).get().build();
@@ -55,6 +67,7 @@ public class AsyncPageDownload<PageParser> extends AsyncTask<String,DownloadResu
         }
         if (!resp.isSuccessful()) {
             publishProgress(DownloadResult.GENERIC_ERROR);
+            return null;
         }
         /*
         HttpURLConnection urlConnection;
@@ -97,42 +110,46 @@ public class AsyncPageDownload<PageParser> extends AsyncTask<String,DownloadResu
 
         **/
         publishProgress(DownloadResult.DONE);
-        String responseString = null;
-        try {
-            Log.d("AsyncPageDownloader","Downloaded data");
-            int num;
+        try{
             responseString = resp.body().string();
-            Document doc = Jsoup.parse(responseString);
-            Element table = doc.select("table.tblLocalizeDetails").first();
-            Elements rows = table.select("tr");
-            for (num = 1; num < rows.size();num++){
-                //This way we should avoid the first row which is the header
-                Elements cols = rows.get(num).select("td");
-                if(cols.size()>0) {
-                    String linea = cols.get(0).text();
-                    String direzione = cols.get(2).text();
-                    //if (linea != null) Log.d("AsyncPageDownloader", "Found something: " + linea);
-                    Log.d("AsyncPageDownloader", "Found something: " + linea);
-                    //Skip the line if there is no info
-                    if ((linea == null || linea.isEmpty()) && (direzione == null || direzione.isEmpty())) continue;
+            parser.parseFromString(responseString);
 
-                } else Log.w("AsyncPageDownloader","ERROR: size = 0"+cols.text());
-            }
         } catch (IOException | NullPointerException e) {
             e.printStackTrace();
+            publishProgress(DownloadResult.SERVER_ERROR);
         }
 
-
-        return null; //TODO change this once we have a good parser
+        return parser.getRelatedFragmentType();
     }
 
     @Override
-    protected void onPostExecute(String stringtoParse) {
-        super.onPostExecute(stringtoParse);
+    protected void onPostExecute(String fragmentType) {
+        AppCompatActivity ac = reference.get();
+
+        if(ac != null){
+            Stop stop = parser.getCreatedStop();
+            FragmentManager framan = ac.getSupportFragmentManager();
+            FragmentTransaction ft = framan.beginTransaction();
+            ResultListFragment fragment = ResultListFragment.newInstance(fragmentType);
+            PalinaAdapter adapter = new PalinaAdapter(ac,stop);
+            Log.d(DEBUG_TAG,"Adapter has "+adapter.getCount()+" elements");
+            fragment.setListAdapter(adapter);
+            fragment.setTextViewMessage(stop.getLocation());
+            ft.replace(R.id.centralFrameLayout,fragment,stop.ID);
+            ft.addToBackStack("Fragment_"+stop.ID);
+            ft.commit();
+
+            SwipeRefreshLayout srl = (SwipeRefreshLayout) ac.findViewById(R.id.swipeRefreshLayout);
+            srl.setRefreshing(false);
+
+            Log.d(DEBUG_TAG,"Fragment created");
+        }
     }
 
     @Override
     protected void onProgressUpdate(DownloadResult... values) {
         super.onProgressUpdate(values);
+
     }
+
 }

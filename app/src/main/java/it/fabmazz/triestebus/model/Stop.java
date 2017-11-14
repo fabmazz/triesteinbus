@@ -47,6 +47,11 @@ public class Stop {
         this.lon = lon;
     }
 
+    public Stop(@NonNull String ID, String location) {
+        this.ID = ID;
+        this.location = location;
+    }
+
     @NonNull
     public String getID() {
         return ID;
@@ -62,6 +67,10 @@ public class Stop {
         return username;
     }
 
+    @Nullable
+    public String getLocation() {
+        return location;
+    }
 
     @Nullable
     public Double getLat() {
@@ -72,14 +81,14 @@ public class Stop {
     public Double getLon() {
         return lon;
     }
-    public String getIDwithFER(){
-        return "FER-".concat(ID);
-    }
-
     public Line getLine(int i){
         return linesStoppingHere.get(i);
     }
     public int countLines(){
         return linesStoppingHere.size();
+    }
+
+    public void setLinesStoppingHere(ArrayList<Line> linesStoppingHere) {
+        this.linesStoppingHere = linesStoppingHere;
     }
 }

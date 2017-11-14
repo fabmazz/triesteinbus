@@ -18,6 +18,8 @@
 
 package it.fabmazz.triestebus.model;
 
+import android.support.annotation.Nullable;
+
 import java.util.ArrayList;
 
 /**
@@ -27,17 +29,27 @@ public class Line {
     private String direction;
     private String name;
     private String description;
-    private ArrayList<String> arrivalTimes;
+    @Nullable private ArrayList<Integer> arrivalTimes;
+    private static final String ARRIVING_STRING = "IN TRANSITO";
+    private static final Integer ARRIVING_STRING_VALUE = 0;
 
-    public Line(String direction, String name) {
-        this.direction = direction;
+    public Line(String name, String description) {
+        this.description = description;
         this.name = name;
     }
 
-    public Line(String direction, String name, String description, ArrayList<String> arrivalTimes) {
+    public Line(String direction, String name, String description,@Nullable ArrayList<Integer> arrivalTimes) {
         this.direction = direction;
         this.name = name;
         this.description = description;
+        this.arrivalTimes = arrivalTimes;
+    }
+
+    public void setDirection(String direction) {
+        this.direction = direction;
+    }
+
+    public void setArrivalTimes(ArrayList<Integer> arrivalTimes) {
         this.arrivalTimes = arrivalTimes;
     }
 
@@ -53,18 +65,34 @@ public class Line {
         return description;
     }
 
-    public ArrayList<String> getArrivalTimes() {
+    public ArrayList<Integer> getArrivalTimes() {
         return arrivalTimes;
     }
     public String printArrivalTimesWith(CharSequence charSequence){
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < getArrivalTimesCount(); i++ ){
             if (i!=0) sb.append(charSequence);
-            sb.append(arrivalTimes.get(i));
+            sb.append(getStringOfTime(arrivalTimes.get(i)));
         }
         return sb.toString();
     }
     public int getArrivalTimesCount(){
         return arrivalTimes.size();
+    }
+    public static Integer getNumericalTime(String timeS){
+        Integer t;
+        if(timeS.trim().equals(ARRIVING_STRING)) t = ARRIVING_STRING_VALUE;
+        else {
+            t = Integer.parseInt(timeS);
+        }
+        return t;
+    }
+    public static String getStringOfTime(Integer time){
+        String s;
+        if(time.equals(ARRIVING_STRING_VALUE)) s = ARRIVING_STRING;
+        else {
+            s = Integer.toString(time);
+        }
+        return s;
     }
 }

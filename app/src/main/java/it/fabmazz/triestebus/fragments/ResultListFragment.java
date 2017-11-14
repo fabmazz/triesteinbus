@@ -147,7 +147,7 @@ public class ResultListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        //Log.d(getString(R.string.list_fragment_debug),"Fragment restored, saved listAdapter is "+(mListAdapter));
+        Log.d("Fragment","msgTXTView is shown: "+messageTextView.isShown()+" "+messageTextView.getText());
         if(mListAdapter!=null){
 
             ListAdapter adapter = mListAdapter;
@@ -173,7 +173,7 @@ public class ResultListFragment extends Fragment {
             mListener = (FragmentListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement ResultFragmentListener");
+                    + " must implement FragmentListener");
         }
     }
 
@@ -218,25 +218,32 @@ public class ResultListFragment extends Fragment {
     }
     */
     public void setTextViewMessage(String message){
-        messageTextView.setText(message);
-        switch (adapterType){
-            case TYPE_LINES:
-                final MainActivity activ = (MainActivity) getActivity();
-                messageTextView.setClickable(true);
-                messageTextView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //TODO
-                        //new AsyncAddToFavorites(getContext()).execute(activ.getLastSuccessfullySearchedBusStop());
-                    }
-                });
-                break;
-            case TYPE_STOPS:
-                messageTextView.setClickable(false);
-                break;
-        }
+        if(messageTextView != null) {
+            //The text view exists
+            messageTextView.setText(message);
+            switch (adapterType) {
+                case TYPE_LINES:
+                    final MainActivity activ = (MainActivity) getActivity();
+                    messageTextView.setClickable(true);
+                    messageTextView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            //TODO
+                            //new AsyncAddToFavorites(getContext()).execute(activ.getLastSuccessfullySearchedBusStop());
+                        }
+                    });
+                    break;
+                case TYPE_STOPS:
+                    messageTextView.setClickable(false);
+                    break;
+            }
 
-        messageTextView.setVisibility(View.VISIBLE);
+            messageTextView.setVisibility(View.VISIBLE);
+        }
+        else {
+            //The text view does not exists, it will be created later
+            getArguments().putString(MESSAGE_TEXT_VIEW,message);
+        }
     }
 
 

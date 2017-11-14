@@ -18,6 +18,7 @@
 
 package it.fabmazz.triestebus.model;
 
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -48,5 +49,15 @@ public class PositionParser implements PageParser {
             //Log.i("Script",str);
 
         }
+    }
+
+    @Override
+    public String getRelatedFragmentType() {
+        return null;
+    }
+
+    @Override
+    public Stop getCreatedStop() {
+        return null;
     }
 }

@@ -19,6 +19,7 @@ package it.fabmazz.triestebus.ui_components;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -111,7 +112,6 @@ public class PalinaAdapter extends ArrayAdapter<Line> {
            String resultString = line.printArrivalTimesWith(" ");
             vh.rowRouteTimetable.setText(resultString);
         }
-
         return convertView;
     }
 }
