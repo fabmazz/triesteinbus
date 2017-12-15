@@ -49,7 +49,7 @@ public class PalinaAdapter extends ArrayAdapter<Line> {
     //private static final int cityIcon = R.drawable.city;
 
     // hey look, a pattern!
-    private static class ViewHolder {
+    private class ViewHolder {
         TextView rowStopIcon;
         TextView rowRouteDestination;
         TextView rowRouteTimetable;

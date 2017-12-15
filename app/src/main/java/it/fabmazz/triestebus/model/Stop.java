@@ -50,6 +50,7 @@ public class Stop {
     public Stop(@NonNull String ID, String location) {
         this.ID = ID;
         this.location = location;
+        linesStoppingHere = new ArrayList<>();
     }
 
     @NonNull
@@ -90,5 +91,16 @@ public class Stop {
 
     public void setLinesStoppingHere(ArrayList<Line> linesStoppingHere) {
         this.linesStoppingHere = linesStoppingHere;
+    }
+    
+    public Line getLineOrCreate(String lineName,String direction){
+        Line fakeline = new Line(lineName,direction);
+        for(Line l : linesStoppingHere){
+			if(l.isTheSameAs(fakeline)) {
+				return l;
+		}
+        }
+        linesStoppingHere.add(fakeline);
+        return fakeline;
     }
 }

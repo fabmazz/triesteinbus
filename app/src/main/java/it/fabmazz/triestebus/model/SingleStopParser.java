@@ -21,6 +21,7 @@ package it.fabmazz.triestebus.model;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.widget.Toast;
 import it.fabmazz.triestebus.fragments.ResultListFragment;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -31,7 +32,8 @@ import java.util.ArrayList;
 
 public class SingleStopParser implements PageParser {
     private static final String DEBUG_TAG ="SingleStopParser";
-    Stop stop;
+    private Stop stop;
+
 
     @Override
     public void parseFromString(@NonNull String strToParse) {
@@ -49,7 +51,6 @@ public class SingleStopParser implements PageParser {
         table = doc.select("table.tblLocalizeDetails").first();
         rows = table.select("tr");
 
-        ArrayList<Line> linesArray = new ArrayList<>();
         ArrayList<Integer> arrivalTimesList = new ArrayList<>();
         Line line = null;
         for (num = 1; num < rows.size();num++){
@@ -62,47 +63,56 @@ public class SingleStopParser implements PageParser {
                 String direzione = cols.get(2).text();
                 String arrivalTime = cols.get(3).text();
                 //if (linenumber != null) Log.d("AsyncPageDownloader", "Found something: " + linenumber);
-                if(!linenumber.isEmpty()){
+                if(!linenumber.isEmpty()) {
                     //new line found
                     //add previous line to the list
-                    if(line != null){
+                    if (line != null) {
                         line.setArrivalTimes(arrivalTimesList);
-                        linesArray.add(line);
                     }
                     //make new line
-                    line = new Line(linenumber,description);
-                    line.setDirection(direzione);
+
+                    line = stop.getLineOrCreate(linenumber, direzione);
+                    line.setDescription(description);
                     arrivalTimesList = new ArrayList<>();
-                    //Log.d(DEBUG_TAG,"Creating new Line");
+                    Log.d(DEBUG_TAG, "linenumber empty, creating new line");
+                    Log.d(DEBUG_TAG, "Number: " + linenumber + " Direction:" + direzione);
+
                 } else if(!direzione.isEmpty()){
                     //There is no number, but the direction has changed
                     //New line but with same description and number
                     if(line != null){
                         line.setArrivalTimes(arrivalTimesList);
-                        linesArray.add(line);
                     }
-                    //It says it can get a NullPointerException, but it's impossible that
-                    //the line number is empty and the direction is not in the first passage
-                    line.setDirection(direzione);
+                    line = stop.getLineOrCreate(line.getName(),direzione);
                     arrivalTimesList = new ArrayList<>();
-                    //Log.d(DEBUG_TAG,"Creating new line with same number and description, num = "+num);
+                    Log.d(DEBUG_TAG,"Creating new line with same number and description, row num = "+num);
+                    Log.d(DEBUG_TAG,"Number: "+line.getDirection()+" Direction:"+direzione);
+
                 }
                 //in every case, we have a new passage to add
                 arrivalTimesList.add(Line.getNumericalTime(arrivalTime));
                 //IF WE HAVE ARRIVED AT THE LAST ROW
                 if (num == rows.size()-1){
-                    //Log.d(DEBUG_TAG,"Last row");
-                    line.setArrivalTimes(arrivalTimesList);
-                    linesArray.add(line);
+                    Log.d(DEBUG_TAG,"Last row");
+                    try {
+                        line.setArrivalTimes(arrivalTimesList);
+                    } catch (NullPointerException ex){
+                        Log.w(DEBUG_TAG,"Last line.setArrivalTimes called on NullPointer");
+                        ex.printStackTrace();
+                    }
                 }
 
             } else
                 Log.w("AsyncPageDownloader","ERROR: size = 0"+cols.text());
         }
-        if (linesArray.size() !=0)
-         stop.setLinesStoppingHere(linesArray);
+         /*
         //TODO: Handle this case gracefully
-        else Log.w(DEBUG_TAG, "No lines found; The app will probably crash");
+        else {
+            Log.w(DEBUG_TAG, "No lines found; The app will probably crash");
+            //Try with empty line list
+            stop.setLinesStoppingHere(new ArrayList<Line>());
+        }
+        */
     }
 
     @Override

@@ -27,26 +27,26 @@ import java.util.ArrayList;
  */
 public class Line {
     private String direction;
-    private String name;
+    private String number;
     private String description;
     @Nullable private ArrayList<Integer> arrivalTimes;
     private static final String ARRIVING_STRING = "IN TRANSITO";
     private static final Integer ARRIVING_STRING_VALUE = 0;
 
-    public Line(String name, String description) {
-        this.description = description;
-        this.name = name;
+    public Line(String name, String direction) {
+        this.direction = direction;
+        this.number = name;
     }
 
     public Line(String direction, String name, String description,@Nullable ArrayList<Integer> arrivalTimes) {
         this.direction = direction;
-        this.name = name;
+        this.number = name;
         this.description = description;
         this.arrivalTimes = arrivalTimes;
     }
 
-    public void setDirection(String direction) {
-        this.direction = direction;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public void setArrivalTimes(ArrayList<Integer> arrivalTimes) {
@@ -58,7 +58,7 @@ public class Line {
     }
 
     public String getName() {
-        return name;
+        return number;
     }
 
     public String getDescription() {
@@ -94,5 +94,14 @@ public class Line {
             s = Integer.toString(time);
         }
         return s;
+    }
+    /**
+     *  Check if is the same "tratta"
+     * 	Many "tratta"s may have the same number but different direction
+     * 	The direction is the important stuff
+     */
+    public boolean isTheSameAs(Line lt){
+        if(number.equals(lt.getName()) && direction.equals(lt.getDirection())) return true;
+        else return false;
     }
 }

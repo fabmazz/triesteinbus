@@ -20,17 +20,15 @@
     <!--android:drawableLeft="@drawable/bus"
         android:drawableStart="@drawable/bus" -->
     <TextView
-        android:id="@+id/routeDestination"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="@android:color/white"
-        android:layout_height="30dp"
-        android:layout_width="match_parent"
-        android:layout_toEndOf="@id/routeID"
-        android:layout_toRightOf="@id/routeID"
-        android:layout_alignTop="@+id/routeID"
-        android:maxLines="1"
-        android:drawablePadding="0dp"
-    >
+            android:id="@+id/routeDestination"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_toEndOf="@id/routeID"
+            android:layout_toRightOf="@id/routeID"
+            android:layout_alignTop="@+id/routeID"
+            android:maxLines="2"
+            android:drawablePadding="0dp"
+            android:textSize="21sp">
     </TextView>
 
     <!-- this can hold 3-4 timetable entries before overflowing into a second line. It's ugly but at least doesn't lose any information. -->

@@ -27,6 +27,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Toast;
 import it.fabmazz.triestebus.backend.NetworkTools;
 import it.fabmazz.triestebus.fragments.ResultListFragment;
 import it.fabmazz.triestebus.model.DownloadResult;
@@ -44,7 +45,7 @@ public class AsyncPageDownload<P extends PageParser> extends AsyncTask<String,Do
     private static final String DEBUG_TAG = "AsyncPageDownloader";
     private P parser;
     private WeakReference<AppCompatActivity> reference;
-
+    SwipeRefreshLayout srl;
     public AsyncPageDownload(P parser, WeakReference<AppCompatActivity> c) {
         this.parser = parser;
         this.reference = c;
@@ -69,46 +70,6 @@ public class AsyncPageDownload<P extends PageParser> extends AsyncTask<String,Do
             publishProgress(DownloadResult.GENERIC_ERROR);
             return null;
         }
-        /*
-        HttpURLConnection urlConnection;
-        StringBuilder result = null;
-        URL url = null;
-        int connectionCode = 0;
-        try {
-            url = new URL(strings[0]);
-            urlConnection = (HttpURLConnection) url.openConnection();
-            connectionCode = urlConnection.getResponseCode();
-        } catch(IOException e) {
-            publishProgress(DownloadResult.CONNECTION_ERROR);
-            e.printStackTrace();
-            return null;
-        }
-        if (connectionCode == HttpsURLConnection.HTTP_OK || connectionCode == HttpURLConnection.HTTP_OK)
-            try {
-                InputStream in = new BufferedInputStream(
-                        urlConnection.getInputStream());
-                BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(in));
-                result = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    result.append(line);
-                }
-            } catch (Exception e) {
-                Log.e("asyncwget", e.getMessage());
-            } finally {
-                urlConnection.disconnect();
-            }
-            if (result == null) {
-                publishProgress(DownloadResult.NULL_STRING);
-                return null;
-            }
-        else{
-            publishProgress(DownloadResult.GENERIC_ERROR);
-            Log.d("PageDownload","Status code different than 200: "+connectionCode);
-            }
-
-        **/
         publishProgress(DownloadResult.DONE);
         try{
             responseString = resp.body().string();
@@ -126,30 +87,65 @@ public class AsyncPageDownload<P extends PageParser> extends AsyncTask<String,Do
     protected void onPostExecute(String fragmentType) {
         AppCompatActivity ac = reference.get();
 
-        if(ac != null){
+        if(ac != null && fragmentType != null){
+            SwipeRefreshLayout srl = (SwipeRefreshLayout) ac.findViewById(R.id.swipeRefreshLayout);
+            srl.setRefreshing(false);
+
+
             Stop stop = parser.getCreatedStop();
             FragmentManager framan = ac.getSupportFragmentManager();
             FragmentTransaction ft = framan.beginTransaction();
             ResultListFragment fragment = ResultListFragment.newInstance(fragmentType);
             PalinaAdapter adapter = new PalinaAdapter(ac,stop);
-            Log.d(DEBUG_TAG,"Adapter has "+adapter.getCount()+" elements");
-            fragment.setListAdapter(adapter);
-            fragment.setTextViewMessage(stop.getLocation());
-            ft.replace(R.id.centralFrameLayout,fragment,stop.ID);
-            ft.addToBackStack("Fragment_"+stop.ID);
-            ft.commit();
+            //Need to check if the
+            if(stop.countLines() == 0){
+                Log.d(DEBUG_TAG,"Adapter has no elements");
+                showToastAndDie("No passages for this stop");
+            }
+            else {
+                fragment.setListAdapter(adapter);
+                fragment.setTextViewMessage(stop.getLocation());
+                ft.replace(R.id.centralFrameLayout, fragment, stop.ID);
+                ft.addToBackStack("Fragment_" + stop.ID);
+                ft.commit();
+                Log.d(DEBUG_TAG, "Fragment created");
+            }
 
-            SwipeRefreshLayout srl = (SwipeRefreshLayout) ac.findViewById(R.id.swipeRefreshLayout);
-            srl.setRefreshing(false);
-
-            Log.d(DEBUG_TAG,"Fragment created");
         }
     }
 
     @Override
     protected void onProgressUpdate(DownloadResult... values) {
-        super.onProgressUpdate(values);
+        DownloadResult res = values[0];
+        switch(res){
+            case NULL_STRING:
+               showToastAndDie("Null string inserted");
+                break;
+            case SERVER_ERROR:
+                showToastAndDie("Server error");
+                break;
+            case CONNECTION_ERROR:
+                showToastAndDie("Connection error");
+                break;
+            case GENERIC_ERROR:
+                showToastAndDie("An error occured");
+                break;
+            case DONE:
+                Log.d(DEBUG_TAG,"Finished downloading");
+            default:
 
+        }
+        AppCompatActivity ac = reference.get();
+        SwipeRefreshLayout srl = (SwipeRefreshLayout) ac.findViewById(R.id.swipeRefreshLayout);
+        srl.setRefreshing(false);
+
+
+    }
+    private void showToastAndDie(String text){
+        AppCompatActivity act = reference.get();
+        if(act!=null)
+            Toast.makeText(act, text, Toast.LENGTH_SHORT).show();
+        cancel(true);
     }
 
 }
