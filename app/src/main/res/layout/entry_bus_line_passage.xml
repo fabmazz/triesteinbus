@@ -9,8 +9,8 @@
 
     <TextView
             android:id="@+id/routeID"
-            android:layout_width="54dip"
-            android:layout_height="54dip"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
             android:gravity="center"
             android:textSize="21sp" android:textColor="@android:color/white"
     android:background="@drawable/bus_icon_background">

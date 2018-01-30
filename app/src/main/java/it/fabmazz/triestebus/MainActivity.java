@@ -92,7 +92,8 @@ public class MainActivity extends AppCompatActivity implements FragmentListener{
         if (stop.isEmpty() || stop.length() < 4){
             Toast.makeText(this, "Enter more than 4 characters", Toast.LENGTH_SHORT).show();
         } else {
-            new AsyncPageDownload<>(new SingleStopParser(), new WeakReference<AppCompatActivity>(this)).execute("https://infomobility.triestetrasporti.it/tst/webapp/index.php?operation=8&point=FER-"+stop);
+            new AsyncPageDownload<>(new SingleStopParser(), new WeakReference<AppCompatActivity>(this))
+                    .execute("https://infomobility.triestetrasporti.it/tst/webapp/index.php?operation=8&point=FER-"+stop);
             swipeRefreshLayout.setRefreshing(true);
             swipeRefreshLayout.setVisibility(View.VISIBLE);
         }

@@ -39,7 +39,7 @@ import it.fabmazz.triestebus.model.Stop;
  *
  *
  */
-public class ResultListFragment extends Fragment {
+public class ResultListFragment extends CommonFragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String LIST_TYPE = "list-type";
     public static final String TYPE_LINES ="lines";
@@ -49,6 +49,7 @@ public class ResultListFragment extends Fragment {
     private static final String MESSAGE_TEXT_VIEW ="message_text_view";
     private String adapterType;
 
+    private FragmentKind kind;
 
     private FragmentListener mListener;
     private TextView messageTextView;
@@ -84,6 +85,13 @@ public class ResultListFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             adapterType = getArguments().getString(LIST_TYPE);
+           if(adapterType.equals(TYPE_LINES)){
+               kind = FragmentKind.ARRIVALS;
+           } else if(adapterType.equals(TYPE_STOPS)){
+               kind = FragmentKind.STOPS;
+           } else {
+               Log.e(DEBUG_TAG,"Error, the fragment is not of the expected type: "+adapterType);
+           }
         }
     }
 
@@ -163,6 +171,7 @@ public class ResultListFragment extends Fragment {
             reflay.setEnabled(false);
             Log.d("BusTO Fragment " + this.getTag(), "RefreshLayout disabled");
         }
+
         super.onPause();
     }
 
@@ -246,6 +255,10 @@ public class ResultListFragment extends Fragment {
         }
     }
 
+    @Override
+    public FragmentKind getFragmentKind() {
+        return kind;
+    }
 
 
     /**

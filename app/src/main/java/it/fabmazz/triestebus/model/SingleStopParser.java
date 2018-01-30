@@ -22,6 +22,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.widget.Toast;
+import it.fabmazz.triestebus.fragments.FragmentKind;
 import it.fabmazz.triestebus.fragments.ResultListFragment;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -30,7 +31,7 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 
-public class SingleStopParser implements PageParser {
+public class SingleStopParser extends PageParser<Stop> {
     private static final String DEBUG_TAG ="SingleStopParser";
     private Stop stop;
 
@@ -116,12 +117,12 @@ public class SingleStopParser implements PageParser {
     }
 
     @Override
-    public String getRelatedFragmentType() {
-        return ResultListFragment.TYPE_LINES;
+    public FragmentKind getRelatedFragmentType() {
+        return FragmentKind.ARRIVALS;
     }
 
     @Override
-    public Stop getCreatedStop() {
+    public Stop getFinalResult() {
         return stop;
     }
 }

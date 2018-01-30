@@ -29,6 +29,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 import it.fabmazz.triestebus.backend.NetworkTools;
+import it.fabmazz.triestebus.fragments.FragmentKind;
 import it.fabmazz.triestebus.fragments.ResultListFragment;
 import it.fabmazz.triestebus.model.DownloadResult;
 import it.fabmazz.triestebus.model.PageParser;
@@ -41,18 +42,18 @@ import okhttp3.Response;
 import java.io.*;
 import java.lang.ref.WeakReference;
 
-public class AsyncPageDownload<P extends PageParser> extends AsyncTask<String,DownloadResult,String> {
+public class AsyncPageDownload<Result> extends AsyncTask<String,DownloadResult,FragmentKind> {
     private static final String DEBUG_TAG = "AsyncPageDownloader";
-    private P parser;
+    private PageParser parser;
     private WeakReference<AppCompatActivity> reference;
     SwipeRefreshLayout srl;
-    public AsyncPageDownload(P parser, WeakReference<AppCompatActivity> c) {
-        this.parser = parser;
+    public AsyncPageDownload(PageParser p, WeakReference<AppCompatActivity> c) {
+        this.parser = p;
         this.reference = c;
     }
 
     @Override
-    protected String doInBackground(String... strings) {
+    protected FragmentKind doInBackground(String... strings) {
 
         String responseString = null;
 
@@ -84,18 +85,23 @@ public class AsyncPageDownload<P extends PageParser> extends AsyncTask<String,Do
     }
 
     @Override
-    protected void onPostExecute(String fragmentType) {
+    protected void onPostExecute(FragmentKind fragmentKind) {
         AppCompatActivity ac = reference.get();
 
-        if(ac != null && fragmentType != null){
+        if(ac != null && fragmentKind != null){
             SwipeRefreshLayout srl = (SwipeRefreshLayout) ac.findViewById(R.id.swipeRefreshLayout);
             srl.setRefreshing(false);
-
-
-            Stop stop = parser.getCreatedStop();
+            String listFragmentType=null;
+            switch (fragmentKind){
+                case STOPS:
+                    listFragmentType = ResultListFragment.TYPE_STOPS;
+                case ARRIVALS:
+                    listFragmentType = ResultListFragment.TYPE_LINES;
+            }
+            Stop stop = (Stop) parser.getFinalResult();
             FragmentManager framan = ac.getSupportFragmentManager();
             FragmentTransaction ft = framan.beginTransaction();
-            ResultListFragment fragment = ResultListFragment.newInstance(fragmentType);
+            ResultListFragment fragment = ResultListFragment.newInstance(listFragmentType);
             PalinaAdapter adapter = new PalinaAdapter(ac,stop);
             //Need to check if the
             if(stop.countLines() == 0){

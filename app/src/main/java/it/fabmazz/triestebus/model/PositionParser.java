@@ -20,17 +20,19 @@ package it.fabmazz.triestebus.model;
 
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import it.fabmazz.triestebus.fragments.FragmentKind;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * This class should parse the information from the position, but doesn't work yet
  */
-public class PositionParser implements PageParser {
+public class PositionParser extends PageParser<ArrayList<Stop>> {
     @Override
     public void parseFromString(String strToParse) {
         Document doc = Jsoup.parse(strToParse);
@@ -52,12 +54,13 @@ public class PositionParser implements PageParser {
     }
 
     @Override
-    public String getRelatedFragmentType() {
-        return null;
+    public FragmentKind getRelatedFragmentType() {
+        return FragmentKind.STOPS;
     }
 
     @Override
-    public Stop getCreatedStop() {
+    public ArrayList<Stop> getFinalResult() {
         return null;
     }
+
 }
