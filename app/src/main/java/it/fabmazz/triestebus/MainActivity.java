@@ -32,6 +32,7 @@ import android.widget.*;
 import it.fabmazz.triestebus.fragments.FragmentListener;
 import it.fabmazz.triestebus.model.PageParser;
 import it.fabmazz.triestebus.model.SingleStopParser;
+import it.fabmazz.triestebus.ui_components.FragmentMaintainer;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -92,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements FragmentListener{
         if (stop.isEmpty() || stop.length() < 4){
             Toast.makeText(this, "Enter more than 4 characters", Toast.LENGTH_SHORT).show();
         } else {
-            new AsyncPageDownload<>(new SingleStopParser(), new WeakReference<AppCompatActivity>(this))
+            new AsyncPageDownload(new SingleStopParser(), new WeakReference<AppCompatActivity>(this))
                     .execute("https://infomobility.triestetrasporti.it/tst/webapp/index.php?operation=8&point=FER-"+stop);
             swipeRefreshLayout.setRefreshing(true);
             swipeRefreshLayout.setVisibility(View.VISIBLE);

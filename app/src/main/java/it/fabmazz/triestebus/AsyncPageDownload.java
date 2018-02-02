@@ -18,10 +18,8 @@
 
 package it.fabmazz.triestebus;
 
-import android.app.Activity;
-import android.app.Fragment;
-import android.content.Context;
 import android.os.AsyncTask;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -42,11 +40,15 @@ import okhttp3.Response;
 import java.io.*;
 import java.lang.ref.WeakReference;
 
-public class AsyncPageDownload<Result> extends AsyncTask<String,DownloadResult,FragmentKind> {
+/**
+ * Class to download stuff from the internet and display it
+ * Might be nice to move all the UI part inside another component
+ *
+ */
+public class AsyncPageDownload extends AsyncTask<String,DownloadResult,FragmentKind> {
     private static final String DEBUG_TAG = "AsyncPageDownloader";
     private PageParser parser;
     private WeakReference<AppCompatActivity> reference;
-    SwipeRefreshLayout srl;
     public AsyncPageDownload(PageParser p, WeakReference<AppCompatActivity> c) {
         this.parser = p;
         this.reference = c;
@@ -55,7 +57,7 @@ public class AsyncPageDownload<Result> extends AsyncTask<String,DownloadResult,F
     @Override
     protected FragmentKind doInBackground(String... strings) {
 
-        String responseString = null;
+        String responseString;
 
         OkHttpClient theClient = NetworkTools.getClient();
         Request request = new Request.Builder().url(strings[0]).get().build();
@@ -71,7 +73,6 @@ public class AsyncPageDownload<Result> extends AsyncTask<String,DownloadResult,F
             publishProgress(DownloadResult.GENERIC_ERROR);
             return null;
         }
-        publishProgress(DownloadResult.DONE);
         try{
             responseString = resp.body().string();
             parser.parseFromString(responseString);
@@ -80,6 +81,7 @@ public class AsyncPageDownload<Result> extends AsyncTask<String,DownloadResult,F
             e.printStackTrace();
             publishProgress(DownloadResult.SERVER_ERROR);
         }
+        publishProgress(DownloadResult.DONE);
 
         return parser.getRelatedFragmentType();
     }
@@ -91,31 +93,26 @@ public class AsyncPageDownload<Result> extends AsyncTask<String,DownloadResult,F
         if(ac != null && fragmentKind != null){
             SwipeRefreshLayout srl = (SwipeRefreshLayout) ac.findViewById(R.id.swipeRefreshLayout);
             srl.setRefreshing(false);
-            String listFragmentType=null;
+            String listFragmentType;
             switch (fragmentKind){
                 case STOPS:
                     listFragmentType = ResultListFragment.TYPE_STOPS;
                 case ARRIVALS:
                     listFragmentType = ResultListFragment.TYPE_LINES;
+                    Stop stop = (Stop) parser.getFinalResult();
+                    if(stop.countLines() == 0){
+                        Log.d(DEBUG_TAG,"Adapter has no elements");
+                        showToastAndDie("No passages for this stop");
+                    }else {
+                        PalinaAdapter adapter = new PalinaAdapter(ac, stop);
+                        ResultListFragment fragment = ResultListFragment.newInstance(listFragmentType);
+                        fragment.setListAdapter(adapter);
+                        fragment.setTextViewMessage(stop.getLocation());
+                        addNewFragment(fragment,stop.ID,ac);
+                    }
             }
-            Stop stop = (Stop) parser.getFinalResult();
-            FragmentManager framan = ac.getSupportFragmentManager();
-            FragmentTransaction ft = framan.beginTransaction();
-            ResultListFragment fragment = ResultListFragment.newInstance(listFragmentType);
-            PalinaAdapter adapter = new PalinaAdapter(ac,stop);
-            //Need to check if the
-            if(stop.countLines() == 0){
-                Log.d(DEBUG_TAG,"Adapter has no elements");
-                showToastAndDie("No passages for this stop");
-            }
-            else {
-                fragment.setListAdapter(adapter);
-                fragment.setTextViewMessage(stop.getLocation());
-                ft.replace(R.id.centralFrameLayout, fragment, stop.ID);
-                ft.addToBackStack("Fragment_" + stop.ID);
-                ft.commit();
-                Log.d(DEBUG_TAG, "Fragment created");
-            }
+            Log.d(DEBUG_TAG, "Fragment created");
+
 
         }
     }
@@ -141,17 +138,33 @@ public class AsyncPageDownload<Result> extends AsyncTask<String,DownloadResult,F
             default:
 
         }
-        AppCompatActivity ac = reference.get();
-        SwipeRefreshLayout srl = (SwipeRefreshLayout) ac.findViewById(R.id.swipeRefreshLayout);
-        srl.setRefreshing(false);
+
 
 
     }
     private void showToastAndDie(String text){
         AppCompatActivity act = reference.get();
-        if(act!=null)
+        if(act!=null) {
+            SwipeRefreshLayout srl = (SwipeRefreshLayout) act.findViewById(R.id.swipeRefreshLayout);
+            srl.setRefreshing(false);
             Toast.makeText(act, text, Toast.LENGTH_SHORT).show();
+        }
         cancel(true);
     }
 
+    /**
+     * Shortcut method to add new Fragment
+     * @param fragment the fragment to add
+     * @param tag   the fragment tag
+     * @param act   the activity to add it to, already "unwrapped"
+     */
+
+    protected void addNewFragment(Fragment fragment, String tag, AppCompatActivity act){
+        FragmentManager fm = act.getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.centralFrameLayout,fragment,tag);
+        ft.addToBackStack("state"+tag);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+        ft.commit();
+    }
 }

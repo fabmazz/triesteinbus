@@ -85,13 +85,17 @@ public class ResultListFragment extends CommonFragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             adapterType = getArguments().getString(LIST_TYPE);
-           if(adapterType.equals(TYPE_LINES)){
-               kind = FragmentKind.ARRIVALS;
-           } else if(adapterType.equals(TYPE_STOPS)){
-               kind = FragmentKind.STOPS;
-           } else {
-               Log.e(DEBUG_TAG,"Error, the fragment is not of the expected type: "+adapterType);
-           }
+            switch (adapterType) {
+                case TYPE_LINES:
+                    kind = FragmentKind.ARRIVALS;
+                    break;
+                case TYPE_STOPS:
+                    kind = FragmentKind.STOPS;
+                    break;
+                default:
+                    Log.e(DEBUG_TAG, "Error, the fragment is not of the expected type: " + adapterType);
+                    break;
+            }
         }
     }
 
@@ -207,6 +211,16 @@ public class ResultListFragment extends CommonFragment {
         if (resultsListView != null) {
             resultsListView.setAdapter(adapter);
             resultsListView.setVisibility(View.VISIBLE);
+        }
+    }
+    public static String getFragmentTagFrom(String idorsearch,String adapterType){
+        switch(adapterType){
+            case TYPE_LINES:
+                return "Stop_"+idorsearch.trim();
+            case TYPE_STOPS:
+                return "Search_"+idorsearch.trim();
+            default:
+                return null;
         }
     }
 
