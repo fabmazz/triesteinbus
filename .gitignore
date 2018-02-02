@@ -3,6 +3,7 @@
 *.iml
 .gradle
 local.properties
+gradle.properties
 .idea/
 Thumbs.db
 .DS_Store
