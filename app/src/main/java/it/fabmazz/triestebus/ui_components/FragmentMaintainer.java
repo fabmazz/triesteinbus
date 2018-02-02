@@ -19,39 +19,24 @@
 package it.fabmazz.triestebus.ui_components;
 
 import android.support.v4.app.FragmentManager;
-import android.widget.FrameLayout;
-import it.fabmazz.triestebus.fragments.CommonFragment;
 import it.fabmazz.triestebus.fragments.FragmentKind;
-import it.fabmazz.triestebus.model.PageParser;
-
-import java.lang.ref.WeakReference;
 import java.util.EnumMap;
 
 public class FragmentMaintainer {
-    private WeakReference<FragmentManager> fraManRef=null;
+    private FragmentManager fm;
     private static FragmentMaintainer INSTANCE;
     private EnumMap<FragmentKind,String> currentShowingFragments;
-    private FragmentMaintainer(){
+    public FragmentMaintainer(FragmentManager framan){
         //Let's use an empty constructor for the moment
         currentShowingFragments =  new EnumMap<>(FragmentKind.class);
+        fm = framan;
     }
-
-    public static synchronized FragmentMaintainer getInstance(FragmentManager framan){
-        if(INSTANCE==null){
-            INSTANCE = new FragmentMaintainer();
-
-        }
-        return INSTANCE;
+    /*
+    public void linkFragmentManager(FragmentManager framan){
+        fm = framan;
     }
-
-    public void bindWidthFragmentManager(FragmentManager framan){
-        fraManRef = new WeakReference<FragmentManager>(framan);
-    }
-
+    */
     public String getCurrentFragmentKey (FragmentKind fk){
         return currentShowingFragments.get(fk);
-    }
-    public void createOrUpdateFragment(FragmentKind fk, PageParser p){
-
     }
 }
