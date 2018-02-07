@@ -19,4 +19,7 @@
 
 <resources>
     <string name="fermata_num">Numero fermata</string>
+    <string name="no_passages">Nessun passaggio</string>
+    <string name="route_towards_destination">%1$s verso %2$s</string>
+    <string name="route_towards_unknown">%s (destinazione sconosciuta)</string>
 </resources>
