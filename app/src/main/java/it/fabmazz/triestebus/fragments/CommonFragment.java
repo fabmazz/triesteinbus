@@ -18,7 +18,7 @@
 
 package it.fabmazz.triestebus.fragments;
 
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 
 abstract public class CommonFragment extends Fragment {
     public abstract FragmentKind getFragmentKind();

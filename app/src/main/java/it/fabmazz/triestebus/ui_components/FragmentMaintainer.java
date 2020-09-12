@@ -18,7 +18,7 @@
 
 package it.fabmazz.triestebus.ui_components;
 
-import android.support.v4.app.FragmentManager;
+import androidx.fragment.app.FragmentManager;
 import it.fabmazz.triestebus.fragments.FragmentKind;
 import java.util.EnumMap;
 

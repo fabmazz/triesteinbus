@@ -1,6 +1,5 @@
 package it.fabmazz.triestebus.model;
 
-import android.support.v4.app.Fragment;
 import it.fabmazz.triestebus.fragments.FragmentKind;
 
 public abstract class PageParser<Result> {

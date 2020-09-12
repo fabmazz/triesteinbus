@@ -19,9 +19,9 @@
 package it.fabmazz.triestebus;
 
 import android.content.Context;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -32,10 +32,8 @@ import android.widget.*;
 import it.fabmazz.triestebus.fragments.FragmentListener;
 import it.fabmazz.triestebus.model.PageParser;
 import it.fabmazz.triestebus.model.SingleStopParser;
-import it.fabmazz.triestebus.ui_components.FragmentMaintainer;
 
 import java.lang.ref.WeakReference;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements FragmentListener{
 

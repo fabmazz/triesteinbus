@@ -34,11 +34,11 @@
             android:layout_height="wrap_content" android:id="@+id/searchBtn" android:layout_alignParentTop="true"
             android:layout_alignParentRight="true" android:layout_alignParentEnd="true"
     android:onClick="searchFromMainEditText"/>
-    <android.support.v4.widget.SwipeRefreshLayout android:layout_height="match_parent"
-                                                  android:layout_width="match_parent"
-                                                  android:layout_alignParentLeft="true"
-                                                  android:layout_below="@+id/numEditText"
-                                                  android:id="@+id/swipeRefreshLayout">
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout android:layout_height="match_parent"
+                                                           android:layout_width="match_parent"
+                                                           android:layout_alignParentLeft="true"
+                                                           android:layout_below="@+id/numEditText"
+                                                           android:id="@+id/swipeRefreshLayout">
 
         <FrameLayout
                 android:layout_width="match_parent"
@@ -48,6 +48,6 @@
 
         </FrameLayout>
 
-    </android.support.v4.widget.SwipeRefreshLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </RelativeLayout>

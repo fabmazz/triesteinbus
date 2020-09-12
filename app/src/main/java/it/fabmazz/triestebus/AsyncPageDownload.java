@@ -19,11 +19,11 @@
 package it.fabmazz.triestebus;
 
 import android.os.AsyncTask;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 import it.fabmazz.triestebus.backend.NetworkTools;

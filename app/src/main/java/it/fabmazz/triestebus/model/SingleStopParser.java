@@ -18,12 +18,9 @@
 
 package it.fabmazz.triestebus.model;
 
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
+import androidx.annotation.NonNull;
 import android.util.Log;
-import android.widget.Toast;
 import it.fabmazz.triestebus.fragments.FragmentKind;
-import it.fabmazz.triestebus.fragments.ResultListFragment;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

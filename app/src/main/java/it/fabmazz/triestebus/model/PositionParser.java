@@ -18,7 +18,6 @@
 
 package it.fabmazz.triestebus.model;
 
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import it.fabmazz.triestebus.fragments.FragmentKind;
 import org.jsoup.Jsoup;
